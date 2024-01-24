@@ -47,6 +47,7 @@ export default function NyTest() {
           {hosts.map(h => <option key={h} value={h}>{h}</option>)}
         </select>
       </label>
+      <br />
       <button onClick={handleStartTest}>Start test</button>
     </div>
   );

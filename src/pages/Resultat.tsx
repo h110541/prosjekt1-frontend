@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from "react";
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 
 interface ResultatType {
   id: string;
@@ -13,6 +13,7 @@ export default function Resultat() {
   const [resultat, setResultat] = useState<ResultatStateType>(null);
   const timerId = useRef<number | null>(null);
   const { id } = useParams();
+  const navigate = useNavigate();
 
   useEffect(() => {
     async function fetchResultat() {
@@ -38,6 +39,7 @@ export default function Resultat() {
       <p><strong>Test-ID:</strong> {id}</p>
       {resultat && resultat.status === "running" && <TestRunning />}
       {resultat && resultat.status === "finished" && <TestFinished resultat={resultat} />}
+      <button onClick={() => navigate("/")}>Ny test</button>
     </div>
   );
 }
@@ -54,11 +56,11 @@ function TestRunning() {
 function TestFinished({ resultat }: { resultat: ResultatType }) {
   const tabellRader = resultat.result.intervals.map((i: any, index: number) => (
     <tr key={index}>
-      <td>{i.sum.start} – {i.sum.end} sec</td>
-      <td>{i.sum.bytes} bytes</td>
-      <td>{i.sum.bits_per_second} bits per second</td>
+      <td>{i.sum.start.toFixed(2)} – {i.sum.end.toFixed(2)} sec</td>
+      <td>{sizeString(i.sum.bytes)}</td>
+      <td>{rateString(i.sum.bits_per_second)}</td>
       <td>{i.sum.retransmits}</td>
-      <td>{i.streams[0].snd_cwnd} bytes</td>
+      <td>{sizeString(i.streams[0].snd_cwnd)}</td>
     </tr>
   ));
 
@@ -102,16 +104,16 @@ function TestFinished({ resultat }: { resultat: ResultatType }) {
         <tbody>
           <tr>
             <th scope="row">Sender</th>
-            <td>{resultat.result.end.sum_sent.start} – {resultat.result.end.sum_sent.end} sec</td>
-            <td>{resultat.result.end.sum_sent.bytes} bytes</td>
-            <td>{resultat.result.end.sum_sent.bits_per_second} bits per second</td>
+            <td>{resultat.result.end.sum_sent.start.toFixed(2)} – {resultat.result.end.sum_sent.end.toFixed(2)} sec</td>
+            <td>{sizeString(resultat.result.end.sum_sent.bytes)}</td>
+            <td>{rateString(resultat.result.end.sum_sent.bits_per_second)}</td>
             <td>{resultat.result.end.sum_sent.retransmits}</td>
           </tr>
           <tr>
             <th scope="row">Receiver</th>
-            <td>{resultat.result.end.sum_received.start} – {resultat.result.end.sum_sent.end} sec</td>
-            <td>{resultat.result.end.sum_received.bytes} bytes</td>
-            <td>{resultat.result.end.sum_received.bits_per_second} bits per second</td>
+            <td>{resultat.result.end.sum_received.start.toFixed(2)} – {resultat.result.end.sum_sent.end.toFixed(2)} sec</td>
+            <td>{sizeString(resultat.result.end.sum_received.bytes)}</td>
+            <td>{rateString(resultat.result.end.sum_received.bits_per_second)}</td>
             <td></td>
           </tr>
         </tbody>
@@ -120,7 +122,7 @@ function TestFinished({ resultat }: { resultat: ResultatType }) {
   );
 }
 
-function f1(numBytes: number) {
+function sizeString(numBytes: number) {
   if (numBytes >= (1024 ** 4)) {
     return (numBytes / (1024 ** 4)).toFixed(1) + ' TiB';
   } else if (numBytes >= (1024 ** 3)) {
@@ -131,5 +133,19 @@ function f1(numBytes: number) {
     return (numBytes / 1024).toFixed(1) + ' KiB';
   } else {
     return String(numBytes) + ' bytes';
+  }
+}
+
+function rateString(bitsPerSecond: number) {
+  if (bitsPerSecond >= (1000 ** 4)) {
+    return (bitsPerSecond / (1000 ** 4)).toFixed(1) + ' Tbit/s';
+  } else if (bitsPerSecond >= (1000 ** 3)) {
+    return (bitsPerSecond / (1000 ** 3)).toFixed(1) + ' Gbit/s';
+  } else if (bitsPerSecond >= (1000 ** 2)) {
+    return (bitsPerSecond / (1000 ** 2)).toFixed(1) + ' Mbit/s';
+  } else if (bitsPerSecond >= 1000) {
+    return (bitsPerSecond / 1000).toFixed(1) + ' kbit/s';
+  } else {
+    return String(bitsPerSecond) + ' bit/s';
   }
 }
