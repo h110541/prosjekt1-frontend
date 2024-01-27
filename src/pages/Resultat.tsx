@@ -24,12 +24,16 @@ export default function Resultat() {
 
   useEffect(() => {
     async function fetchResultat() {
-      const response = await fetch(`/api/network-tests/${id}`);
-      const data: ResultatType = await response.json();
-      setResultat(data);
+      try {
+        const response = await fetch(`/api/network-tests/${id}`);
+        const data: ResultatType = await response.json();
+        setResultat(data);
 
-      if (data.status === "finished" || data.status === "failed") {
-        clearInterval(timerId.current);
+        if (data.status === "finished" || data.status === "failed") {
+          clearInterval(timerId.current);
+        }
+      } catch (error) {
+        console.log(error);
       }
     }
 

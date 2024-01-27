@@ -13,9 +13,13 @@ export default function Resultatliste() {
 
   useEffect(() => {
     async function fetchResultatliste() {
-      const response = await fetch("/api/network-tests-list");
-      const data = await response.json();
-      setResultater(data);
+      try {
+        const response = await fetch("/api/network-tests-list");
+        const data = await response.json();
+        setResultater(data);
+      } catch (error) {
+        console.log(error);
+      }
     }
 
     fetchResultatliste();
