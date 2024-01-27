@@ -1,46 +1,57 @@
 import { useState, useEffect, useRef } from "react";
-import { useParams, useNavigate } from "react-router-dom";
+import { useParams } from "react-router-dom";
+import Navbar from "../Navbar";
 
 interface ResultatType {
   id: string;
-  status: "running" | "finished";
-  result: any;
+  status: "running" | "finished" | "failed";
+  result?: any;
+  failure_type?: string;
 }
 
-type ResultatStateType = ResultatType | null;
-
 export default function Resultat() {
-  const [resultat, setResultat] = useState<ResultatStateType>(null);
-  const timerId = useRef<number | null>(null);
+  const [resultat, setResultat] = useState<ResultatType | null>(null);
+  const timerId = useRef<number | undefined>(undefined);
   const { id } = useParams();
-  const navigate = useNavigate();
+
+  const errorMsgs: string[] = [];
+  if (resultat?.failure_type) {
+    errorMsgs.push(resultat.failure_type);
+  }
+  if (resultat?.result?.error) {
+    errorMsgs.push(resultat.result.error);
+  }
 
   useEffect(() => {
     async function fetchResultat() {
       const response = await fetch(`/api/network-tests/${id}`);
-      const data = await response.json();
+      const data: ResultatType = await response.json();
       setResultat(data);
 
-      if (data.status === "finished" && timerId.current !== null) {
+      if (data.status === "finished" || data.status === "failed") {
         clearInterval(timerId.current);
       }
     }
 
     fetchResultat();
 
-    if (timerId.current === null) {
+    if (timerId.current === undefined) {
       timerId.current = setInterval(fetchResultat, 1000);
     }
+
   }, [id]);
 
   return (
-    <div>
-      <h1>Resultat</h1>
-      <p><strong>Test-ID:</strong> {id}</p>
-      {resultat && resultat.status === "running" && <TestRunning />}
-      {resultat && resultat.status === "finished" && <TestFinished resultat={resultat} />}
-      <button onClick={() => navigate("/")}>Ny test</button>
-    </div>
+    <>
+      <Navbar />
+      <main>
+        <h1>Resultat</h1>
+        <p><strong>Test-ID:</strong> {id}</p>
+        {resultat && resultat.status === "running" && <TestRunning />}
+        {resultat && resultat.status === "finished" && <TestFinished resultat={resultat} />}
+        {errorMsgs.length > 0 && <ErrorMsg errorMessages={errorMsgs} />}
+      </main>
+    </>
   );
 }
 
@@ -118,6 +129,15 @@ function TestFinished({ resultat }: { resultat: ResultatType }) {
           </tr>
         </tbody>
       </table>
+    </div>
+  );
+}
+
+function ErrorMsg({ errorMessages }: { errorMessages: string[] }) {
+  return (
+    <div>
+      <h2>Error</h2>
+      {errorMessages.map((msg, i) => <p key={i}>{msg}</p>)}
     </div>
   );
 }

@@ -1,23 +1,26 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import Navbar from "../Navbar";
+
+interface ServerType {
+  host: string;
+  port: number;
+}
 
 export default function NyTest() {
-  const [host, setHost] = useState('');
-  const [hosts, setHosts] = useState([]);
+  const [servers, setServers] = useState<ServerType[]>([]);
+  const [serverIndex, setServerIndex] = useState(0);
   const navigate = useNavigate();
 
   useEffect(() => {
-    async function fetchHosts() {
-      const response = await fetch("/api/hosts");
+    async function fetchServerlist() {
+      const response = await fetch("/api/servers");
       const data = await response.json();
-      setHosts(data);
-
-      if (data[0] !== undefined) {
-        setHost(data[0]);
-      }
+      setServers(data);
+      setServerIndex(0);
     }
 
-    fetchHosts();
+    fetchServerlist();
   }, []);
 
   async function handleStartTest() {
@@ -25,7 +28,10 @@ export default function NyTest() {
       const options = {
         method: "POST",
         headers: { "Content-Type": "application/json; charset=utf-8" },
-        body: JSON.stringify({ host: host })
+        body: JSON.stringify({
+          host: servers[serverIndex].host,
+          port: servers[serverIndex].port
+        })
       };
 
       const response = await fetch("/api/start-new-test", options);
@@ -40,15 +46,24 @@ export default function NyTest() {
   }
 
   return (
-    <div>
-      <h1>Ny test</h1>
-      <label>Host:
-        <select value={host} onChange={e => setHost(e.target.value)}>
-          {hosts.map(h => <option key={h} value={h}>{h}</option>)}
-        </select>
-      </label>
-      <br />
-      <button onClick={handleStartTest}>Start test</button>
-    </div>
+    <>
+      <Navbar />
+      <main>
+        <h1>Ny test</h1>
+
+        {servers.length > 0 && (
+          <>
+            <label>Host:
+              <select value={serverIndex} onChange={e => setServerIndex(Number(e.target.value))}>
+                {servers.map((s, i) => <option key={i} value={i}>{s.host}</option>)}
+              </select>
+            </label>
+            <br />
+            <button onClick={handleStartTest}>Start test</button>
+          </>
+        )}
+
+      </main>
+    </>
   );
 }
