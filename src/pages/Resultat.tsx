@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from "react";
 import { useParams } from "react-router-dom";
 import Navbar from "../Navbar";
-import { Box, LinearProgress, Typography } from "@mui/material";
+import { Box, LinearProgress, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Typography } from "@mui/material";
 
 interface ResultatType {
   id: string;
@@ -59,7 +59,7 @@ export default function Resultat() {
         alignItems: 'center'
       }}>
         <Typography variant="h2" component="h1">Resultat</Typography>
-        <p><strong>Test-ID:</strong> {id}</p>
+        <Typography color="text.secondary">Test-ID: {id}</Typography>
         {resultat && resultat.status === "running" && <TestRunning />}
         {resultat && resultat.status === "finished" && <TestFinished resultat={resultat} />}
         {errorMsgs.length > 0 && <ErrorMsg errorMessages={errorMsgs} />}
@@ -78,6 +78,51 @@ function TestRunning() {
 }
 
 function TestFinished({ resultat }: { resultat: ResultatType }) {
+
+  return (
+    <>
+      <Typography>
+        local <strong>{resultat.result.start.connected[0].local_host}</strong>{' '}
+        port {resultat.result.start.connected[0].local_port}{' '}
+        connected to{' '}
+        <strong>{resultat.result.start.connected[0].remote_host}</strong>{' '}
+        port {resultat.result.start.connected[0].remote_port}
+      </Typography>
+
+      <Typography variant="h4" component="h2">Intervals</Typography>
+      <TableContainer component={Paper}>
+        <Table sx={{ minWidth: 650 }} aria-label="simple table">
+          <TableHead>
+            <TableRow>
+              <TableCell>Interval</TableCell>
+              <TableCell align="right">Transfer</TableCell>
+              <TableCell align="right">Bitrate</TableCell>
+              <TableCell align="right">Retr</TableCell>
+              <TableCell align="right">Cwnd</TableCell>
+            </TableRow>
+          </TableHead>
+          <TableBody>
+            {resultat.result.intervals.map((i: any, index: number) => (
+              <TableRow
+                key={index}
+                sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
+              >
+                <TableCell>{i.sum.start.toFixed(2)} – {i.sum.end.toFixed(2)} sec</TableCell>
+                <TableCell align="right">{sizeString(i.sum.bytes)}</TableCell>
+                <TableCell align="right">{rateString(i.sum.bits_per_second)}</TableCell>
+                <TableCell align="right">{i.sum.retransmits}</TableCell>
+                <TableCell align="right">{sizeString(i.streams[0].snd_cwnd)}</TableCell>
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
+      </TableContainer>
+
+    </>
+  );
+}
+
+function TestFinished_({ resultat }: { resultat: ResultatType }) {
   const tabellRader = resultat.result.intervals.map((i: any, index: number) => (
     <tr key={index}>
       <td>{i.sum.start.toFixed(2)} – {i.sum.end.toFixed(2)} sec</td>
