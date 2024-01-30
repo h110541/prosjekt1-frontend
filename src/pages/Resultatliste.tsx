@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
-import { Link } from "react-router-dom";
+import { Link as RouterLink } from "react-router-dom";
 import Navbar from "../Navbar";
+import { Box, List, ListItem, ListItemButton, ListItemText, Typography } from "@mui/material";
 
 interface ResultShortType {
   id: string;
@@ -25,24 +26,33 @@ export default function Resultatliste() {
     fetchResultatliste();
   }, []);
 
-  const listItems = resultater.map(r => {
-    return (
-      <li key={r.id}>
-        <Link to={`/resultat/${r.id}`}>{r.id}</Link>{' '}
-        {r.created} status: {r.status}
-      </li>
-    );
-  });
-
   return (
     <>
       <Navbar />
-      <main>
-        <h1>Resultatliste</h1>
+      <Box sx={{
+        my: 10,
+        mx: 'auto',
+        width: 0.6,
+        maxWidth: 900,
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center'
+      }}>
+
+        <Typography variant="h2" component="h1">Resultatliste</Typography>
+
         {resultater.length > 0 && (
-          <ul className="resultatliste">{listItems}</ul>
+          <List>
+            {resultater.map(r => (
+              <ListItem key={r.id} disablePadding>
+                <ListItemButton component={RouterLink} to={`/resultat/${r.id}`}>
+                  <ListItemText primary={r.id} secondary={r.created} />
+                </ListItemButton>
+              </ListItem>
+            ))}
+          </List>
         )}
-      </main>
+      </Box>
     </>
   );
 }

@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from "react";
 import { useParams } from "react-router-dom";
 import Navbar from "../Navbar";
+import { Box, LinearProgress, Typography } from "@mui/material";
 
 interface ResultatType {
   id: string;
@@ -48,23 +49,31 @@ export default function Resultat() {
   return (
     <>
       <Navbar />
-      <main>
-        <h1>Resultat</h1>
+      <Box sx={{
+        my: 10,
+        mx: 'auto',
+        width: 0.6,
+        maxWidth: 900,
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center'
+      }}>
+        <Typography variant="h2" component="h1">Resultat</Typography>
         <p><strong>Test-ID:</strong> {id}</p>
         {resultat && resultat.status === "running" && <TestRunning />}
         {resultat && resultat.status === "finished" && <TestFinished resultat={resultat} />}
         {errorMsgs.length > 0 && <ErrorMsg errorMessages={errorMsgs} />}
-      </main>
+      </Box>
     </>
   );
 }
 
 function TestRunning() {
   return (
-    <div>
-      <h2>Testen kjører...</h2>
-      <progress></progress>
-    </div>
+    <>
+      <Typography variant="h4" component="h2">Testen kjører...</Typography>
+      <LinearProgress sx={{ minWidth: 300, m: 2 }} />
+    </>
   );
 }
 
