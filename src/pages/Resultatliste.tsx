@@ -46,7 +46,7 @@ export default function Resultatliste() {
             {resultater.map(r => (
               <ListItem key={r.id} disablePadding divider>
                 <ListItemButton component={RouterLink} to={`/resultat/${r.id}`}>
-                  <ListItemText primary={r.id} secondary={r.created} />
+                  <ListItemText primary={r.created} secondary={r.id} />
                 </ListItemButton>
               </ListItem>
             ))}

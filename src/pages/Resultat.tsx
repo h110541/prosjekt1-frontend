@@ -118,76 +118,37 @@ function TestFinished({ resultat }: { resultat: ResultatType }) {
         </Table>
       </TableContainer>
 
+      <Typography variant="h4" component="h2">Summary</Typography>
+      <TableContainer component={Paper}>
+        <Table sx={{ minWidth: 650 }} aria-label="simple table">
+          <TableHead>
+            <TableRow>
+              <TableCell></TableCell>
+              <TableCell>Interval</TableCell>
+              <TableCell>Transfer</TableCell>
+              <TableCell>Bitrate</TableCell>
+              <TableCell>Retr</TableCell>
+            </TableRow>
+          </TableHead>
+          <TableBody>
+            <TableRow>
+              <TableCell component="th" scope="row" variant="head">Sender</TableCell>
+              <TableCell>{resultat.result.end.sum_sent.start.toFixed(2)} – {resultat.result.end.sum_sent.end.toFixed(2)} sec</TableCell>
+              <TableCell>{sizeString(resultat.result.end.sum_sent.bytes)}</TableCell>
+              <TableCell>{rateString(resultat.result.end.sum_sent.bits_per_second)}</TableCell>
+              <TableCell>{resultat.result.end.sum_sent.retransmits}</TableCell>
+            </TableRow>
+            <TableRow>
+              <TableCell component="th" scope="row" variant="head">Receiver</TableCell>
+              <TableCell>{resultat.result.end.sum_received.start.toFixed(2)} – {resultat.result.end.sum_sent.end.toFixed(2)} sec</TableCell>
+              <TableCell>{sizeString(resultat.result.end.sum_received.bytes)}</TableCell>
+              <TableCell>{rateString(resultat.result.end.sum_received.bits_per_second)}</TableCell>
+              <TableCell></TableCell>
+            </TableRow>
+          </TableBody>
+        </Table>
+      </TableContainer>
     </>
-  );
-}
-
-function TestFinished_({ resultat }: { resultat: ResultatType }) {
-  const tabellRader = resultat.result.intervals.map((i: any, index: number) => (
-    <tr key={index}>
-      <td>{i.sum.start.toFixed(2)} – {i.sum.end.toFixed(2)} sec</td>
-      <td>{sizeString(i.sum.bytes)}</td>
-      <td>{rateString(i.sum.bits_per_second)}</td>
-      <td>{i.sum.retransmits}</td>
-      <td>{sizeString(i.streams[0].snd_cwnd)}</td>
-    </tr>
-  ));
-
-  return (
-    <div>
-      <p>
-        local <strong>{resultat.result.start.connected[0].local_host}</strong>{' '}
-        port {resultat.result.start.connected[0].local_port}{' '}
-        connected to{' '}
-        <strong>{resultat.result.start.connected[0].remote_host}</strong>{' '}
-        port {resultat.result.start.connected[0].remote_port}
-      </p>
-
-      <h2>Intervals</h2>
-      <table>
-        <thead>
-          <tr>
-            <th>Interval</th>
-            <th>Transfer</th>
-            <th>Bitrate</th>
-            <th>Retr</th>
-            <th>Cwnd</th>
-          </tr>
-        </thead>
-        <tbody>
-          {tabellRader}
-        </tbody>
-      </table>
-
-      <h2>Summary</h2>
-      <table>
-        <thead>
-          <tr>
-            <th></th>
-            <th>Interval</th>
-            <th>Transfer</th>
-            <th>Bitrate</th>
-            <th>Retr</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <th scope="row">Sender</th>
-            <td>{resultat.result.end.sum_sent.start.toFixed(2)} – {resultat.result.end.sum_sent.end.toFixed(2)} sec</td>
-            <td>{sizeString(resultat.result.end.sum_sent.bytes)}</td>
-            <td>{rateString(resultat.result.end.sum_sent.bits_per_second)}</td>
-            <td>{resultat.result.end.sum_sent.retransmits}</td>
-          </tr>
-          <tr>
-            <th scope="row">Receiver</th>
-            <td>{resultat.result.end.sum_received.start.toFixed(2)} – {resultat.result.end.sum_sent.end.toFixed(2)} sec</td>
-            <td>{sizeString(resultat.result.end.sum_received.bytes)}</td>
-            <td>{rateString(resultat.result.end.sum_received.bits_per_second)}</td>
-            <td></td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
   );
 }
 
