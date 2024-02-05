@@ -44,6 +44,11 @@ export default function Resultat() {
       timerId.current = setInterval(fetchResultat, 1000);
     }
 
+    return () => {
+      clearInterval(timerId.current);
+      timerId.current = undefined;
+    };
+
   }, [id]);
 
   return (
@@ -89,16 +94,16 @@ function TestFinished({ resultat }: { resultat: ResultatType }) {
         port {resultat.result.start.connected[0].remote_port}
       </Typography>
 
-      <Typography variant="h4" component="h2">Intervals</Typography>
+      <Typography variant="h4" component="h2" sx={{ mt: 4 }}>Intervals</Typography>
       <TableContainer component={Paper}>
         <Table sx={{ minWidth: 650 }} aria-label="simple table">
           <TableHead>
             <TableRow>
-              <TableCell>Interval</TableCell>
-              <TableCell align="right">Transfer</TableCell>
-              <TableCell align="right">Bitrate</TableCell>
-              <TableCell align="right">Retr</TableCell>
-              <TableCell align="right">Cwnd</TableCell>
+              <TableCell align="center">Interval</TableCell>
+              <TableCell align="center">Transfer</TableCell>
+              <TableCell align="center">Bitrate</TableCell>
+              <TableCell align="center">Retransmits</TableCell>
+              <TableCell align="center">Cwnd</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
@@ -107,42 +112,42 @@ function TestFinished({ resultat }: { resultat: ResultatType }) {
                 key={index}
                 sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
               >
-                <TableCell>{i.sum.start.toFixed(2)} – {i.sum.end.toFixed(2)} sec</TableCell>
-                <TableCell align="right">{sizeString(i.sum.bytes)}</TableCell>
-                <TableCell align="right">{rateString(i.sum.bits_per_second)}</TableCell>
-                <TableCell align="right">{i.sum.retransmits}</TableCell>
-                <TableCell align="right">{sizeString(i.streams[0].snd_cwnd)}</TableCell>
+                <TableCell align="center">{i.sum.start.toFixed(2)} – {i.sum.end.toFixed(2)} sec</TableCell>
+                <TableCell align="center">{sizeString(i.sum.bytes)}</TableCell>
+                <TableCell align="center">{rateString(i.sum.bits_per_second)}</TableCell>
+                <TableCell align="center">{i.sum.retransmits}</TableCell>
+                <TableCell align="center">{sizeString(i.streams[0].snd_cwnd)}</TableCell>
               </TableRow>
             ))}
           </TableBody>
         </Table>
       </TableContainer>
 
-      <Typography variant="h4" component="h2">Summary</Typography>
+      <Typography variant="h4" component="h2" sx={{ mt: 4 }}>Summary</Typography>
       <TableContainer component={Paper}>
         <Table sx={{ minWidth: 650 }} aria-label="simple table">
           <TableHead>
             <TableRow>
               <TableCell></TableCell>
-              <TableCell>Interval</TableCell>
-              <TableCell>Transfer</TableCell>
-              <TableCell>Bitrate</TableCell>
-              <TableCell>Retr</TableCell>
+              <TableCell align="center">Interval</TableCell>
+              <TableCell align="center">Transfer</TableCell>
+              <TableCell align="center">Bitrate</TableCell>
+              <TableCell align="center">Retransmits</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
             <TableRow>
               <TableCell component="th" scope="row" variant="head">Sender</TableCell>
-              <TableCell>{resultat.result.end.sum_sent.start.toFixed(2)} – {resultat.result.end.sum_sent.end.toFixed(2)} sec</TableCell>
-              <TableCell>{sizeString(resultat.result.end.sum_sent.bytes)}</TableCell>
-              <TableCell>{rateString(resultat.result.end.sum_sent.bits_per_second)}</TableCell>
-              <TableCell>{resultat.result.end.sum_sent.retransmits}</TableCell>
+              <TableCell align="center">{resultat.result.end.sum_sent.start.toFixed(2)} – {resultat.result.end.sum_sent.end.toFixed(2)} sec</TableCell>
+              <TableCell align="center">{sizeString(resultat.result.end.sum_sent.bytes)}</TableCell>
+              <TableCell align="center">{rateString(resultat.result.end.sum_sent.bits_per_second)}</TableCell>
+              <TableCell align="center">{resultat.result.end.sum_sent.retransmits}</TableCell>
             </TableRow>
             <TableRow>
               <TableCell component="th" scope="row" variant="head">Receiver</TableCell>
-              <TableCell>{resultat.result.end.sum_received.start.toFixed(2)} – {resultat.result.end.sum_sent.end.toFixed(2)} sec</TableCell>
-              <TableCell>{sizeString(resultat.result.end.sum_received.bytes)}</TableCell>
-              <TableCell>{rateString(resultat.result.end.sum_received.bits_per_second)}</TableCell>
+              <TableCell align="center">{resultat.result.end.sum_received.start.toFixed(2)} – {resultat.result.end.sum_sent.end.toFixed(2)} sec</TableCell>
+              <TableCell align="center">{sizeString(resultat.result.end.sum_received.bytes)}</TableCell>
+              <TableCell align="center">{rateString(resultat.result.end.sum_received.bits_per_second)}</TableCell>
               <TableCell></TableCell>
             </TableRow>
           </TableBody>
