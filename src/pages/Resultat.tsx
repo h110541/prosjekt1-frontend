@@ -1,11 +1,13 @@
 import { useState, useEffect, useRef } from "react";
 import { useParams } from "react-router-dom";
 import Navbar from "../Navbar";
-import { Box, LinearProgress, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Typography } from "@mui/material";
+import { Alert, AlertTitle, Box, LinearProgress, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Typography } from "@mui/material";
 
 interface ResultatType {
   id: string;
   status: "running" | "finished" | "failed";
+  host: string;
+  created: string;
   result?: any;
   failure_type?: string;
 }
@@ -65,6 +67,12 @@ export default function Resultat() {
       }}>
         <Typography variant="h2" component="h1">Resultat</Typography>
         <Typography color="text.secondary">Test-ID: {id}</Typography>
+        {resultat && (
+          <>
+            <Typography color="text.secondary">Test startet: {resultat.created}</Typography>
+            <Typography color="text.secondary">Server: {resultat.host}</Typography>
+          </>
+        )}
         {resultat && resultat.status === "running" && <TestRunning />}
         {resultat && resultat.status === "finished" && <TestFinished resultat={resultat} />}
         {errorMsgs.length > 0 && <ErrorMsg errorMessages={errorMsgs} />}
@@ -76,7 +84,7 @@ export default function Resultat() {
 function TestRunning() {
   return (
     <>
-      <Typography variant="h4" component="h2">Testen kjører...</Typography>
+      <Typography variant="h4" component="h2" sx={{ mt: 2 }}>Testen kjører...</Typography>
       <LinearProgress sx={{ minWidth: 300, m: 2 }} />
     </>
   );
@@ -86,7 +94,7 @@ function TestFinished({ resultat }: { resultat: ResultatType }) {
 
   return (
     <>
-      <Typography>
+      <Typography sx={{ mt: 2 }}>
         local <strong>{resultat.result.start.connected[0].local_host}</strong>{' '}
         port {resultat.result.start.connected[0].local_port}{' '}
         connected to{' '}
@@ -94,7 +102,7 @@ function TestFinished({ resultat }: { resultat: ResultatType }) {
         port {resultat.result.start.connected[0].remote_port}
       </Typography>
 
-      <Typography variant="h4" component="h2" sx={{ mt: 4 }}>Intervals</Typography>
+      <Typography variant="h4" component="h2" sx={{ mt: 4 }}>Intervaller</Typography>
       <TableContainer component={Paper}>
         <Table sx={{ minWidth: 650 }} aria-label="simple table">
           <TableHead>
@@ -123,7 +131,7 @@ function TestFinished({ resultat }: { resultat: ResultatType }) {
         </Table>
       </TableContainer>
 
-      <Typography variant="h4" component="h2" sx={{ mt: 4 }}>Summary</Typography>
+      <Typography variant="h4" component="h2" sx={{ mt: 4 }}>Oppsummert</Typography>
       <TableContainer component={Paper}>
         <Table sx={{ minWidth: 650 }} aria-label="simple table">
           <TableHead>
@@ -159,10 +167,12 @@ function TestFinished({ resultat }: { resultat: ResultatType }) {
 
 function ErrorMsg({ errorMessages }: { errorMessages: string[] }) {
   return (
-    <div>
-      <h2>Error</h2>
-      {errorMessages.map((msg, i) => <p key={i}>{msg}</p>)}
-    </div>
+    <>
+      <Alert variant="filled" severity="error" sx={{my: 2, minWidth: 0.4}}>
+        <AlertTitle>Noe gikk galt...</AlertTitle>
+        {errorMessages.map((msg, i) => <p key={i}>{msg}</p>)}
+      </Alert>
+    </>
   );
 }
 
